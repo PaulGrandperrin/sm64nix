@@ -54,18 +54,18 @@
             pkg-config
             gnumake
             python3
-            (writeShellApplication {name = "git"; text = "";}) # HACK: the makefile tries to extract the version using git, but the .git folder is not available
+            #(writeShellApplication {name = "git"; text = "";}) # HACK: the makefile tries to extract the version using git, but the .git folder is not available
           ];
 
           src = pkgs.fetchFromGitHub {
-            owner = "sm64pc";
-            repo = "sm64ex";
-            rev = "db9a6345baa5acb41f9d77c480510442cab26025";
-            hash = "sha256-q7JWDvNeNrDpcKVtIGqB1k7I0FveYwrfqu7ZZK7T8F8=";
+            owner = "AloXado320";
+            repo = "sm64ex-alo";
+            rev = "cfec4721aeebbfe905b210825418547e12d2d171";
+            hash = "sha256-NHiVkNTy0vVtXjOwbqyyh9b0uIpY/d7nbunPVlhPUI0";
           };
 
           patches = [
-            (src + "/enhancements/60fps_ex.patch")
+            #(src + "/enhancements/60fps_ex.patch")
           ];
 
           preBuild = ''
@@ -73,7 +73,7 @@
             ln -s ${builtins.getAttr rom_version baserom} ./baserom.${rom_version}.z64
           '';
 
-          makeFlags = [ "VERSION=${rom_version}" "BETTERCAMERA=1" "TEXTURE_FIX=1" "EXT_OPTIONS_MENU=1" ];
+          makeFlags = [ "VERSION=${rom_version}" "BETTERCAMERA=1" "EXT_OPTIONS_MENU=1" "HIGH_FPS_PC=1" ];
 
           installPhase = ''
             mkdir -p $out/bin
