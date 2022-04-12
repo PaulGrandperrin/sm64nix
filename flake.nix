@@ -64,6 +64,10 @@
             hash = "sha256-q7JWDvNeNrDpcKVtIGqB1k7I0FveYwrfqu7ZZK7T8F8=";
           };
 
+          patches = [
+            (src + "/enhancements/60fps_ex.patch")
+          ];
+
           preBuild = ''
             patchShebangs extract_assets.py
             ln -s ${builtins.getAttr rom_version baserom} ./baserom.${rom_version}.z64
