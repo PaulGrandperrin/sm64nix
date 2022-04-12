@@ -73,7 +73,7 @@
             ln -s ${builtins.getAttr rom_version baserom} ./baserom.${rom_version}.z64
           '';
 
-          makeFlags = [ "VERSION=${rom_version}" ];
+          makeFlags = [ "VERSION=${rom_version}" "BETTERCAMERA=1" "TEXTURE_FIX=1" "EXT_OPTIONS_MENU=1" ];
 
           installPhase = ''
             mkdir -p $out/bin
