@@ -90,15 +90,21 @@
 
             # HD Bowser
             unzip -d actors -o ${hd_bowser_model}
+
+            # circumvent bug in tools/mkzip.py
+            find . -type d,f  -exec touch -m -d '1/1/2000' {} +
           '';
 
           makeFlags = [
             "VERSION=${rom_version}"
+            "EXTERNAL_DATA=1"
+            "BASEDIR=../res"
           ];
 
           installPhase = ''
             mkdir -p $out/bin
             cp -v ./build/${rom_version}_pc/sm64.${rom_version}.f3dex2e $out/bin/sm64pc_${rom_version}
+            cp -rv ./build/res $out/ 
             copyDesktopItems
           '';
 
