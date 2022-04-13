@@ -29,6 +29,16 @@
           name = "super-mario-64-sh.z64";
         };
       };
+      hd_mario_model = pkgs.fetchurl {
+        url = "http://sm64pc.info/forum/download/file.php?id=19";
+        hash = "sha256-lsCFyblsg+hWWqoM9j8fv904D+FZ444Jq9++BizsEnM=";
+        name = "hd-mario-model.7z";
+      };
+      hd_bowser_model = pkgs.fetchurl {
+        url = "http://sm64pc.info/forum/download/file.php?id=53";
+        hash = "sha256-3pbSbG/dLxqNUIz/MlS8IBvYXdl7yb6N9pID/GtdS4A=";
+        name = "hd-bowser-model.zip";
+      };
       sm64pc = {rom_version ? "us"}: pkgs.stdenv.mkDerivation rec {
           pname = "sm64pc_${rom_version}";
           version = "git";
@@ -54,7 +64,9 @@
             pkg-config
             gnumake
             python3
-            #(writeShellApplication {name = "git"; text = "";}) # HACK: the makefile tries to extract the version using git, but the .git folder is not available
+            p7zip
+            unzip
+            which
           ];
 
           src = pkgs.fetchFromGitHub {
@@ -71,13 +83,22 @@
           preBuild = ''
             patchShebangs extract_assets.py
             ln -s ${builtins.getAttr rom_version baserom} ./baserom.${rom_version}.z64
+
+            # HD Mario
+            7z x -aoa ${hd_mario_model}
+            cp -rv "HD Mario Model"/actors/* actors/
+
+            # HD Bowser
+            unzip -d actors -o ${hd_bowser_model}
           '';
 
-          makeFlags = [ "VERSION=${rom_version}" "BETTERCAMERA=1" "EXT_OPTIONS_MENU=1" "HIGH_FPS_PC=1" ];
+          makeFlags = [
+            "VERSION=${rom_version}"
+          ];
 
           installPhase = ''
             mkdir -p $out/bin
-            cp ./build/${rom_version}_pc/sm64.${rom_version}.f3dex2e $out/bin/sm64pc_${rom_version}
+            cp -v ./build/${rom_version}_pc/sm64.${rom_version}.f3dex2e $out/bin/sm64pc_${rom_version}
             copyDesktopItems
           '';
 
