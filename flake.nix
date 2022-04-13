@@ -6,7 +6,7 @@
   outputs = {self, nixpkgs}:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      baserom = {
+      baseroms = {
         us = pkgs.fetchurl {
           url = "https://archive.org/download/Nintendo64FullRegionalUploadByGhostware/Super%20Mario%2064%20%28USA%29.z64";
           hash = "sha256-F84Hc0PGEz+Mny1tbZpKtiyM0qpXxArqH0kLTIuyHZE=";
@@ -39,7 +39,8 @@
         hash = "sha256-3pbSbG/dLxqNUIz/MlS8IBvYXdl7yb6N9pID/GtdS4A=";
         name = "hd-bowser-model.zip";
       };
-      sm64pc = {rom_version ? "us"}: pkgs.stdenv.mkDerivation rec {
+      
+      sm64pc = {rom_version ? "us", texture_pack ? null}: if texture_pack == null then pkgs.stdenv.mkDerivation rec {
           pname = "sm64pc_${rom_version}";
           version = "git";
 
@@ -82,7 +83,7 @@
 
           preBuild = ''
             patchShebangs extract_assets.py
-            ln -s ${builtins.getAttr rom_version baserom} ./baserom.${rom_version}.z64
+            ln -s ${builtins.getAttr rom_version baseroms} ./baserom.${rom_version}.z64
 
             # HD Mario
             7z x -aoa ${hd_mario_model}
@@ -121,6 +122,26 @@
             description = "Super Mario 64 (${rom_version}), decompiled from N64 version and ported to PC";
             homepage = "https://github.com/sm64pc/sm64ex";
           };
+        } else pkgs.stdenv.mkDerivation {
+          name = "${(sm64pc{}).name}-tp_${texture_pack}";
+          src = builtins.getAttr texture_pack {
+            reloaded = pkgs.fetchFromGitHub {
+              owner = "GhostlyDark";
+              repo = "SM64-Reloaded";
+              rev = "8df2a347ef98ef81aaa86274f4f92308520f5edb";
+              hash = "sha256-X0bg9PGd5+rUJ9pAkxqwF8adUhs7rtQrVoxMBvj6BcY=";
+            };
+          };
+          
+          nativeBuildInputs = with pkgs; [
+            copyDesktopItems
+            makeWrapper
+          ];
+
+          installPhase = ''
+            mkdir -p $out
+            makeWrapper ${sm64pc{}}/bin/${(sm64pc{}).pname} $out/bin/${(sm64pc{}).name}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $out|cut -d'/' -f4-)"
+          '';
         };
     in {
       packages.x86_64-linux.default = sm64pc {};
@@ -128,5 +149,6 @@
       packages.x86_64-linux.sm64pc_eu = sm64pc {rom_version = "eu";};
       packages.x86_64-linux.sm64pc_jp = sm64pc {rom_version = "jp";};
       packages.x86_64-linux.sm64pc_sh = sm64pc {rom_version = "sh";};
+      packages.x86_64-linux.sm64pc_us_tp_reloaded = sm64pc {texture_pack = "reloaded";};
     };
 }
