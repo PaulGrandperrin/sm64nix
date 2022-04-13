@@ -140,7 +140,7 @@
 
           installPhase = ''
             mkdir -p $out
-            makeWrapper ${sm64pc{}}/bin/${(sm64pc{}).pname} $out/bin/${(sm64pc{}).name}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $out|cut -d'/' -f4-)"
+            makeWrapper ${sm64pc{}}/bin/${(sm64pc{}).pname} $out/bin/${(sm64pc{}).name}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
           '';
         };
     in {
