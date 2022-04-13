@@ -40,7 +40,7 @@
         name = "hd-bowser-model.zip";
       };
       
-      sm64pc = {rom_version ? "us", texture_pack ? null}: if texture_pack == null then pkgs.stdenv.mkDerivation rec {
+      sm64pc = {rom_version ? "us", texture_pack ? null, options ? []}: if texture_pack == null then pkgs.stdenv.mkDerivation rec {
           pname = "sm64pc_${rom_version}";
           version = "git";
 
@@ -100,11 +100,11 @@
             "VERSION=${rom_version}"
             "EXTERNAL_DATA=1"
             "BASEDIR=../res"
-          ];
+          ] ++ options;
 
           installPhase = ''
             mkdir -p $out/bin
-            cp -v ./build/${rom_version}_pc/sm64.${rom_version}.f3dex2e $out/bin/sm64pc_${rom_version}
+            cp -v ./build/${rom_version}_pc/sm64.${rom_version}.f3dex2e $out/bin/${pname}
             cp -rv ./build/res $out/ 
             copyDesktopItems
           '';
@@ -122,8 +122,10 @@
             description = "Super Mario 64 (${rom_version}), decompiled from N64 version and ported to PC";
             homepage = "https://github.com/sm64pc/sm64ex";
           };
-        } else pkgs.stdenv.mkDerivation {
-          name = "${(sm64pc{}).name}-tp_${texture_pack}";
+        } else let 
+          base = sm64pc {inherit rom_version options;};
+        in pkgs.stdenv.mkDerivation {
+          name = "${base.name}-tp_${texture_pack}";
           src = builtins.getAttr texture_pack {
             reloaded = pkgs.fetchFromGitHub {
               owner = "GhostlyDark";
@@ -140,15 +142,14 @@
 
           installPhase = ''
             mkdir -p $out
-            makeWrapper ${sm64pc{}}/bin/${(sm64pc{}).pname} $out/bin/${(sm64pc{}).name}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
+            makeWrapper ${base}/bin/${base.pname} $out/bin/${base.pname}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
           '';
         };
     in {
-      packages.x86_64-linux.default = sm64pc {};
+      packages.x86_64-linux.default = sm64pc {texture_pack = "reloaded"; options = ["HIGH_FPS_PC=1"];};
       packages.x86_64-linux.sm64pc_us = sm64pc {rom_version = "us";};
       packages.x86_64-linux.sm64pc_eu = sm64pc {rom_version = "eu";};
       packages.x86_64-linux.sm64pc_jp = sm64pc {rom_version = "jp";};
       packages.x86_64-linux.sm64pc_sh = sm64pc {rom_version = "sh";};
-      packages.x86_64-linux.sm64pc_us_tp_reloaded = sm64pc {texture_pack = "reloaded";};
     };
 }
