@@ -147,6 +147,7 @@
         };
     in {
       packages.x86_64-linux.default = sm64pc {texture_pack = "reloaded"; options = ["HIGH_FPS_PC=1"];};
+      defaultPackage.x86_64-linux = sm64pc {};
       packages.x86_64-linux.sm64pc_us = sm64pc {rom_version = "us";};
       packages.x86_64-linux.sm64pc_eu = sm64pc {rom_version = "eu";};
       packages.x86_64-linux.sm64pc_jp = sm64pc {rom_version = "jp";};
