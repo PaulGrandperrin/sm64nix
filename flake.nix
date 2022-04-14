@@ -137,6 +137,12 @@
               rev = "8df2a347ef98ef81aaa86274f4f92308520f5edb";
               hash = "sha256-X0bg9PGd5+rUJ9pAkxqwF8adUhs7rtQrVoxMBvj6BcY=";
             };
+            reloaded1080p = pkgs.fetchFromGitHub {
+              owner = "GhostlyDark";
+              repo = "SM64-Reloaded";
+              rev = "3171815c4039a7a893a082593cb2f425fad6bc4a";
+              hash = "sha256-WUTmCADuYJq1pDMQdMFHv3aHE2mlXvScLQkdW2Xhxv4=";
+            };
           };
           
           nativeBuildInputs = with pkgs; [
@@ -150,7 +156,7 @@
           '';
         };
     in {
-      packages.x86_64-linux.default = sm64pc {texture_pack = "reloaded"; options = ["HIGH_FPS_PC=1"];};
+      packages.x86_64-linux.default = sm64pc {texture_pack = "reloaded1080p"; options = ["HIGH_FPS_PC=1"];};
       defaultPackage.x86_64-linux = sm64pc {};
       packages.x86_64-linux.sm64pc_us = sm64pc {rom_version = "us";};
       packages.x86_64-linux.sm64pc_eu = sm64pc {rom_version = "eu";};
