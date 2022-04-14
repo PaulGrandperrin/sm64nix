@@ -125,7 +125,7 @@
         } else let 
           base = sm64pc {inherit rom_version options;};
         in pkgs.stdenv.mkDerivation {
-          name = "${base.name}-tp_${texture_pack}";
+          name = "${base.pname}-tp_${texture_pack}";
           src = builtins.getAttr texture_pack {
             reloaded = pkgs.fetchFromGitHub {
               owner = "GhostlyDark";
