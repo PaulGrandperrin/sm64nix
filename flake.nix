@@ -1,11 +1,14 @@
 {
   description = "Super Mario 64";
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-21.11";
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-21.11";
+  };
 
   outputs = {self, nixpkgs}:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
       baseroms = {
         us = pkgs.fetchurl {
           url = "https://archive.org/download/Nintendo64FullRegionalUploadByGhostware/Super%20Mario%2064%20%28USA%29.z64";
@@ -124,8 +127,9 @@
           };
         } else let 
           base = sm64pc {inherit rom_version options;};
-        in pkgs.stdenv.mkDerivation {
-          name = "${base.pname}-tp_${texture_pack}";
+        in pkgs.stdenv.mkDerivation rec {
+          pname = "${base.pname}-tp_${texture_pack}";
+          version = "git";
           src = builtins.getAttr texture_pack {
             reloaded = pkgs.fetchFromGitHub {
               owner = "GhostlyDark";
@@ -142,7 +146,7 @@
 
           installPhase = ''
             mkdir -p $out
-            makeWrapper ${base}/bin/${base.pname} $out/bin/${base.pname}-tp_${texture_pack} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
+            makeWrapper ${base}/bin/${base.pname} $out/bin/${pname} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
           '';
         };
     in {
