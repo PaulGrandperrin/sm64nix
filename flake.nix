@@ -52,6 +52,14 @@
         hash = "sha256-Hp2rPfMkUvenQqElCg/CXEW4iFeaAu7x95NIaL4eC2E=";
         name = "hd_peach.zip";
       };
+      hd_peach_textures = pkgs.runCommand "hd_peach_textures" {
+        nativeBuildInputs = with pkgs; [unzip];
+      } ''
+        unzip ${hd_peach_model}
+        unzip './~hd_peach_v2.zip'
+        mkdir $out
+        mv -v gfx $out/
+      '';
       
       sm64pc = {rom_version ? "us", texture_pack ? null, options ? []}: if texture_pack == null then pkgs.stdenv.mkDerivation rec {
           pname = "sm64pc_${rom_version}";
@@ -145,7 +153,8 @@
           };
         } else let 
           base = sm64pc {inherit rom_version options;};
-        in pkgs.stdenv.mkDerivation rec {
+        in pkgs.symlinkJoin rec {
+          name = "${base.pname}-tp_${texture_pack}-git";
           pname = "${base.pname}-tp_${texture_pack}";
           version = "git";
           src = builtins.getAttr texture_pack {
@@ -162,15 +171,16 @@
               hash = "sha256-WUTmCADuYJq1pDMQdMFHv3aHE2mlXvScLQkdW2Xhxv4=";
             };
           };
+          paths = [hd_peach_textures src];
           
           nativeBuildInputs = with pkgs; [
             copyDesktopItems
             makeWrapper
           ];
 
-          installPhase = ''
+          postBuild = ''
             mkdir -p $out
-            makeWrapper ${base}/bin/${base.pname} $out/bin/${pname} --add-flags "--gamedir ../../$(echo $src|cut -d'/' -f4-)"
+            makeWrapper ${base}/bin/${base.pname} $out/bin/${pname} --add-flags "--gamedir ../../$(echo $out|cut -d'/' -f4-)"
           '';
         };
     in {
