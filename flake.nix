@@ -33,14 +33,24 @@
         };
       };
       hd_mario_model = pkgs.fetchurl {
-        url = "http://sm64pc.info/forum/download/file.php?id=19";
-        hash = "sha256-lsCFyblsg+hWWqoM9j8fv904D+FZ444Jq9++BizsEnM=";
-        name = "hd-mario-model.7z";
+        url = "http://sm64pc.info/downloads/model_pack/hd_mario_v2.zip";
+        hash = "sha256-wE3jQkYj2JOE+TMUtLuH/zYmEGddM1WvUsMn8lBg4pQ=";
+        name = "hd_mario.zip";
       };
       hd_bowser_model = pkgs.fetchurl {
-        url = "http://sm64pc.info/forum/download/file.php?id=53";
-        hash = "sha256-3pbSbG/dLxqNUIz/MlS8IBvYXdl7yb6N9pID/GtdS4A=";
-        name = "hd-bowser-model.zip";
+        url = "http://sm64pc.info/downloads/model_pack/hd_bowser.zip";
+        hash = "sha256-4ONQH00AC4QGzFyNnPMEI+HfshnoKswKaMyoPE2sPzo=";
+        name = "hd_bowser.zip";
+      };
+      hd_koopa_model = pkgs.fetchurl {
+        url = "http://sm64pc.info/downloads/model_pack/hd_koopa_the_quick.zip";
+        hash = "sha256-Lhz3LPX0sSVzAuSZE96i5ojTXmdN0px+ErcNSLK94lg=";
+        name = "hd_koopa.zip";
+      };
+      hd_peach_model = pkgs.fetchurl {
+        url = "http://sm64pc.info/downloads/model_pack/hd_peach_v2.zip";
+        hash = "sha256-Hp2rPfMkUvenQqElCg/CXEW4iFeaAu7x95NIaL4eC2E=";
+        name = "hd_peach.zip";
       };
       
       sm64pc = {rom_version ? "us", texture_pack ? null, options ? []}: if texture_pack == null then pkgs.stdenv.mkDerivation rec {
@@ -88,12 +98,12 @@
             patchShebangs extract_assets.py
             ln -s ${builtins.getAttr rom_version baseroms} ./baserom.${rom_version}.z64
 
-            # HD Mario
-            7z x -aoa ${hd_mario_model}
-            cp -rv "HD Mario Model"/actors/* actors/
+            # HD models
+            unzip -o ${hd_mario_model}
+            unzip -o ${hd_bowser_model}
+            #unzip -o ${hd_koopa_model}
+            #unzip -o ${hd_peach_model}
 
-            # HD Bowser
-            unzip -d actors -o ${hd_bowser_model}
 
             # circumvent bug in tools/mkzip.py
             find . -type d,f  -exec touch -m -d '1/1/2000' {} +
