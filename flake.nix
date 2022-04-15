@@ -81,6 +81,7 @@
             p7zip
             unzip
             which
+            vim # for ex
           ];
 
           src = pkgs.fetchFromGitHub {
@@ -101,9 +102,13 @@
             # HD models
             unzip -o ${hd_mario_model}
             unzip -o ${hd_bowser_model}
-            #unzip -o ${hd_koopa_model}
+            unzip -o ${hd_koopa_model}
             #unzip -o ${hd_peach_model}
 
+            # patch in koopa the quick
+            ex actors/group14.h -c 'normal G' -c '?#endif' -c 'normal O#include "koopa/geo_header.h"' +wq
+            # patch in koopa's shell
+            ex actors/common0.h -c 'normal G' -c '?#endif' -c 'normal O#include "koopa_shell/geo_header.h"' +wq
 
             # circumvent bug in tools/mkzip.py
             find . -type d,f  -exec touch -m -d '1/1/2000' {} +
