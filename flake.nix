@@ -52,6 +52,14 @@
         hash = "sha256-Hp2rPfMkUvenQqElCg/CXEW4iFeaAu7x95NIaL4eC2E=";
         name = "hd_peach.zip";
       };
+      hd_mario_textures = pkgs.runCommand "hd_mario_textures" {
+        nativeBuildInputs = with pkgs; [unzip];
+      } ''
+        unzip ${hd_mario_model}
+        unzip './~hd_mario_v2.zip'
+        mkdir $out
+        mv -v gfx $out/
+      '';
       hd_peach_textures = pkgs.runCommand "hd_peach_textures" {
         nativeBuildInputs = with pkgs; [unzip];
       } ''
@@ -171,7 +179,7 @@
               hash = "sha256-WUTmCADuYJq1pDMQdMFHv3aHE2mlXvScLQkdW2Xhxv4=";
             };
           };
-          paths = [hd_peach_textures src];
+          paths = [hd_mario_textures hd_peach_textures src];
           
           nativeBuildInputs = with pkgs; [
             copyDesktopItems
