@@ -191,12 +191,21 @@
             makeWrapper ${base}/bin/${base.pname} $out/bin/${pname} --add-flags "--gamedir ../../$(echo $out|cut -d'/' -f4-)"
           '';
         };
-    in {
-      packages.x86_64-linux.default = sm64pc {texture_pack = "reloaded1080p"; options = ["HIGH_FPS_PC=1"];};
-      defaultPackage.x86_64-linux = sm64pc {};
+    in rec { 
       packages.x86_64-linux.sm64pc_us = sm64pc {rom_version = "us";};
       packages.x86_64-linux.sm64pc_eu = sm64pc {rom_version = "eu";};
       packages.x86_64-linux.sm64pc_jp = sm64pc {rom_version = "jp";};
       packages.x86_64-linux.sm64pc_sh = sm64pc {rom_version = "sh";};
+      
+      packages.x86_64-linux.sm64pc_us_hfps = sm64pc {rom_version = "us"; options = ["HIGH_FPS_PC=1"];};
+      packages.x86_64-linux.sm64pc_eu_hfps = sm64pc {rom_version = "eu"; options = ["HIGH_FPS_PC=1"];};
+      packages.x86_64-linux.sm64pc_jp_hfps = sm64pc {rom_version = "jp"; options = ["HIGH_FPS_PC=1"];};
+      packages.x86_64-linux.sm64pc_sh_hfps = sm64pc {rom_version = "sh"; options = ["HIGH_FPS_PC=1"];};
+      
+      packages.x86_64-linux.sp64pc_us_hfps_tp_reloaded = sm64pc {texture_pack = "reloaded"; options = ["HIGH_FPS_PC=1"];};
+      packages.x86_64-linux.sp64pc_us_hfps_tp_reloaded1080 = sm64pc {texture_pack = "reloaded1080"; options = ["HIGH_FPS_PC=1"];};
+      
+      packages.x86_64-linux.default = packages.x86_64-linux.sp64pc_us_hfps_tp_reloaded1080;
+      defaultPackage.x86_64-linux = packages.x86_64-linux.default;
     };
 }
